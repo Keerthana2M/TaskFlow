@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import 'dotenv/config';
 import {connectDB} from './config/db.js'
+import userRouter from './routes/usetRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -11,12 +12,13 @@ const PORT = process.env.PORT || 4000;
 app.use(express.json());
 app.use(cors());
 
-// MongoDB connection
+// Routes
+app.use('/api/user',userRouter);
 
 
 // API route
 app.get('/api', (req, res) => {
-    console.log("✔ Hit the API route");
+    console.log(" Hit the API route");
     res.send("API working");
 });
 
