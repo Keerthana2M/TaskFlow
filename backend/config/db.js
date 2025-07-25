@@ -1,7 +1,14 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-export const connectDB = async () =>{
-    await mongoose.connect('mongodb+srv://Keerthana:tech2004@cluster0.weq9nje.mongodb.net/mydatabase?retryWrites=true&w=majority')
-    .then(() => console.log('db connected'));
+dotenv.config();
+
+export const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log(' MongoDB connected');
     console.log("MongoDB connection state:", mongoose.connection.readyState);
-}
+  } catch (err) {
+    console.error(' MongoDB connection error:', err);
+  }
+};
