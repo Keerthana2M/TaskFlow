@@ -1,16 +1,17 @@
 import React, { useEffect,useState } from 'react';
-
-import { Routes, Route, useNavigate, Outlet } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import SignUp from './components/signUp';
 import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
 
 const App = () => {
   const navigate = useNavigate();
   const [currentUser,setCurrentUser] =useState(()=>{
-    const stored = localStorage.getItem('currentuser');
+    const stored = localStorage.getItem('currentUser');
     return stored ?JSON.parse(stored):null
   });
+
   useEffect(()=>{
     if(currentUser){
       localStorage.setItem('currentUser',JSON.stringify(currentUser));
@@ -19,26 +20,32 @@ const App = () => {
       localStorage.removeItem('currentUser');
     }
   },[currentUser])
-  const handleAuthSubmit =data =>{
+
+  const handleAuthSubmit =(data = {}) =>{
     const user ={
+      id:data.id || data.userId,
       email:data.email,
-      name:data.name ||'user',
-      avatar:''
+      name:data.name ||'User',
+      avatar:data.avatar ||''
     }
     setCurrentUser(user);
     navigate('/',{replace:true})
   }
+
   const handleLogOut = () =>{
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     setCurrentUser(null);
     navigate('/login',{replace:true});
   }
-  
-  const protecttedLayout = () =>{
-    <Layout user={currentUser} onLogout={handleLogOut}>
-      <Outlet/>
-    </Layout>
+
+  const ProtectedLayout = () =>{
+    if(!currentUser){
+      return <Navigate to="/login" replace/>
+    }
+    return <Layout user={currentUser} onLogout={handleLogOut}/>
   }
+
   return (
    <Routes>
     <Route path='/login' element={<div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
@@ -46,9 +53,13 @@ const App = () => {
     </div>}/>
 
     <Route path='/SignUp' element={<div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
-      <SignUp onSubmit ={handleAuthSubmit} onSwitchMode={()=>navigate('/login')}/>
+      <SignUp onSwitchMode={()=>navigate('/login')}/>
     </div>}/>
-    <Route path='/' element ={<Layout/>}/>
+
+    <Route element={<ProtectedLayout/>}>
+      <Route path='/' element ={<Dashboard/>}/>
+    </Route>
+    <Route path='*' element={<Navigate to={currentUser ? '/' : '/login'} replace/>}/>
    </Routes>
   )
 };

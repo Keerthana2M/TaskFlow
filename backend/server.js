@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import 'dotenv/config';
 import {connectDB} from './config/db.js'
-import userRouter from './routes/usetRoutes.js'
+import userRouter from './routes/userRoutes.js'
 import taskRouter from './routes/taskRoutes.js';
 
 const app = express();
@@ -25,8 +25,12 @@ app.get('/api', (req, res) => {
 });
 
 // Connect to DB then start server
-connectDB()
+connectDB().then(() => {
     app.listen(PORT, '0.0.0.0', () => {
         console.log(` Server started on http://localhost:${PORT}`);
     });
+}).catch((err) => {
+    console.error(' Failed to connect to DB', err);
+    process.exit(1);
+});
 

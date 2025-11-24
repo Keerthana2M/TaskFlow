@@ -3,13 +3,13 @@ import authMiddleware from '../middleware/auth.js'
 import { createTask, deleteTask, getTask, getTaskById, update } from '../controller/taskController.js';
 const taskRouter = express.Router();
 
-taskRouter.route('/gp')
-.get(authMiddleware,getTask)
-.post(authMiddleware,createTask)
+taskRouter.route('/')
+    .get(authMiddleware,getTask)
+    .post(authMiddleware,createTask);
 
-taskRouter.route('/:id/gp')
+taskRouter.route('/:id')
     .get(authMiddleware,getTaskById)
     .put(authMiddleware,update)
-    .delete(authMiddleware,deleteTask)
+    .delete(authMiddleware,deleteTask);
 
-    export default taskRouter;
+export default taskRouter;

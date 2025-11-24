@@ -4,6 +4,8 @@ import Sidebar from './sidebar';
 import { Outlet } from 'react-router-dom';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+
 const Layout = ({ onLogout, user }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,28 +15,32 @@ const Layout = ({ onLogout, user }) => {
     setLoading(true);
     setError(null);
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No auth token found");
+      setLoading(false);
+      onLogout?.();
+      return;
+    }
+
     try {
-     const token = localStorage.getItem("token");
-if (!token) {
-  setError("No auth token found");
-  setLoading(false);
-  return;
-}
+      const response = await axios.get(`${API_URL}/api/tasks`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-
+      const { data } = response;
       const arr = Array.isArray(data)
         ? data
         : Array.isArray(data?.tasks)
         ? data.tasks
-        : Array.isArray(data?.data)
-        ? data.data
         : [];
 
       setTasks(arr);
     } catch (error) {
       console.error(error);
-      setError(error.message || 'Could not load tasks.');
-      if (error.response?.status === 401) onLogout();
+      const message = error.response?.data?.message || error.message || 'Could not load tasks.';
+      setError(message);
+      if (error.response?.status === 401) onLogout?.();
     } finally {
       setLoading(false);
     }
@@ -111,10 +117,16 @@ if (!token) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar user={user} onLogout={onLogout} />
-      <Sidebar user={user} task={tasks} />
+      <Sidebar user={user} tasks={tasks} />
       <div className="ml-0 xl:ml-64 lg:ml-64 md:ml-16 pt-16 p-3 sm:p-4 md:p-4 transition-all duration-300">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
-          <div className="xl:col-span-2 space-x-3 sm:space-y-4">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <StatCard title="Total Tasks" value={stats.totalCount} />
+            <StatCard title="Completed" value={stats.completedTasks} />
+            <StatCard title="Pending" value={stats.pendingCount} />
+            <StatCard title="Completion %" value={`${stats.completedPercentage}%`} />
+          </div>
+          <div className="space-y-4">
             <Outlet context={{ tasks, fetchTasks }} />
           </div>
         </div>

@@ -17,17 +17,15 @@ const taskSchema = new mongoose.Schema({
         type:Date
     },
     owner:{
-        type:mongoose.Schema.Types.ObjectId,ref: 'user',required:true
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required:true
     },
     completed:{
         type:Boolean,
         default:false
     },
-    createdAt:{
-        type:Date,
-        default:Date.now
-    }
+},{timestamps:true});
 
-});
-const Task = mongoose.model.Task || mongoose.model('Task',taskSchema);
+const Task = mongoose.models.Task || mongoose.model('Task',taskSchema);
 export default Task;
