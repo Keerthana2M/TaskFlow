@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const INITIAL_FORM = { email: "", password: "" };
 
-// ✅ Define your own FIELDS, INPUTWRAPPER, BUTTON_CLASSES since you're avoiding dummy.jsx
+
 const FIELDS = [
   { name: "email", type: "email", placeholder: "Enter your email", icon: LogIn, isPassword: false },
   { name: "password", type: "password", placeholder: "Enter your password", icon: Eye, isPassword: true },
