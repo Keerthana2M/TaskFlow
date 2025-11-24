@@ -108,28 +108,28 @@ export async function loginUser(req,res){
 
  //change password function
 
- export async function updatePassword(req,res) {
-    const { currentPassword, newPassword } = req.body;
-    if(!currentPassword||!newPassword || newPassword.length<8){
-        return res.status(400).json({success:false,message:"password invalid or too short"});
-    }
-    try{
-        const userDoc = await User.findById(req.user.id).select("password");
-        if(!userDoc){
-            return res.status(404).json({success:false,message:"user not found"});
-        }
-        const match = await bcrypt.compare(currentPassword,userDoc.password);
-        if(!match){
-            return res.status(401).json({success:false,message:"current password incorrect"});
-        }
-        userDoc.password = await bcrypt.hash(newPassword,10);
-        await userDoc.save();
-        res.json({success:true,message:"password changed"});
-    }
-    catch(error){
-        console.log(err);
-        res.status(500).json({success:false,message:"server error"});
+//  export async function updatePassword(req,res) {
+//     const { currentPassword, newPassword } = req.body;
+//     if(!currentPassword||!newPassword || newPassword.length<8){
+//         return res.status(400).json({success:false,message:"password invalid or too short"});
+//     }
+//     try{
+//         const userDoc = await User.findById(req.user.id).select("password");
+//         if(!userDoc){
+//             return res.status(404).json({success:false,message:"user not found"});
+//         }
+//         const match = await bcrypt.compare(currentPassword,userDoc.password);
+//         if(!match){
+//             return res.status(401).json({success:false,message:"current password incorrect"});
+//         }
+//         userDoc.password = await bcrypt.hash(newPassword,10);
+//         await userDoc.save();
+//         res.json({success:true,message:"password changed"});
+//     }
+//     catch(error){
+//         console.log(err);
+//         res.status(500).json({success:false,message:"server error"});
 
-    }
+//     }
     
- }
+//  }
